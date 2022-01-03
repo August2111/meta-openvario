@@ -141,6 +141,18 @@ IMAGE_CMD_openvario-sdimg () {
 	# create a relative link to new created image
 	ln -sfr ${SDIMG}.gz ${SDIMG_LINK}.gz
 
+    # check the parent directory if above 'poky':
+    if [ -d "../../poky" ]
+    then 
+        pushd ../..
+    else
+        pushd ..
+    fi
+    mkdir -p deploy
+    cp --link --force ${SDIMG}.gz deploy/${IMAGE_NAME}.img.gz
+    cp --link --force ${SDIMG}.gz deploy/${SDIMG_LINK}.gz
+    popd
+
 	# write output filename to file for upload
 	echo ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME} > ${DEPLOY_DIR_IMAGE}/image_name	
 	echo ${SDIMG_LINK} > ${DEPLOY_DIR_IMAGE}/image_link
