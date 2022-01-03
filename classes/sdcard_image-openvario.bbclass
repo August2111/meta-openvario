@@ -37,8 +37,8 @@ do_image_openvario_sdimg[depends] += " \
 			"
 
 # SD card image name
-SDIMG = "${IMGDEPLOYDIR}/${IMAGE_NAME}.rootfs.img"
-SDIMG_LINK = "${IMAGE_NAME_LINK}.rootfs.img"
+SDIMG = "${IMGDEPLOYDIR}/${IMAGE_NAME}.img"
+SDIMG_LINK = "${IMAGE_NAME_LINK}.img"
 
 IMAGE_CMD_openvario-sdimg () {
 
