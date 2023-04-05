@@ -3,12 +3,14 @@ HOMEPAGE = "none"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COREBASE}/LICENSE;md5=4d92cd373abda3937c2bc47fbc49d690"
 
-PR = "r24"
+PR = "r25"
 
 S = "${WORKDIR}/${PN}-${PV}"
 
 SRC_URI = "\
         file://openvario-recovery.its \
+        file://OldImage.bin \
+        file://OldDeviceTree.dtb \
         "
 
 DEPENDS = "\
@@ -23,20 +25,25 @@ do_compile[deptask] = "do_rm_work"
 
 do_configure () {
 	cp ${WORKDIR}/openvario-recovery.its ${S}
-	cp -v ${DEPLOY_DIR_IMAGE}/uImage ${S}
-	cp -v ${DEPLOY_DIR_IMAGE}/openvario-base-initramfs-${MACHINE}.cpio.gz ${S}/initramfs.cpio.gz
-	cp -v ${DEPLOY_DIR_IMAGE}/openvario.dtb ${S}
-	#cp -v ${DEPLOY_DIR_IMAGE}/fex.bin ${S}/script.bin
+	cp ${WORKDIR}/OldImage.bin ${S}/Image  # only WO
 	
+    cp -v ${DEPLOY_DIR_IMAGE}/openvario-base-initramfs-${MACHINE}.cpio.gz ${S}/initramfs.cpio.gz
+	
+    # wrong(aug): cp -v ${DEPLOY_DIR_IMAGE}/${MACHINE}.dtb  ${S}/openvario.dtb
+    cp -v ${WORKDIR}/OldDeviceTree.dtb  ${S}/openvario.dtb  # only WO
+	
+	# wrong(aug): cp -v ${DEPLOY_DIR_IMAGE}/uImage ${S}
+	# wrong(aug): cp -v ${DEPLOY_DIR_IMAGE}/openvario.dtb ${S}
+	#cp -v ${DEPLOY_DIR_IMAGE}/fex.bin ${S}/script.bin
 	#if [ ! -e "${S}/zImage-${MACHINE}.bin" ]; then bbfatal "missing uIUmage-${MACHINE}.bin !"; fi
 	#if [ ! -e "${S}/magna-initramfs-${MACHINE}.cpio.gz" ]; then bbfatal "missing magna-initramfs-${MACHINE}.cpio.gz !"; fi
-	
-	#dd if=${S}/uImage-${MACHINE}.bin of=${S}/zImage skip=64 iflag=skip_bytes
+	# dd if=${S}/uImage-${MACHINE}.bin of=${S}/zImage skip=64 iflag=skip_bytes
 }
 
 do_compile () {
+    pwd  # only as WO for one action
     # Extract kernel from uImage
-    dd if=uImage of=Image bs=64 skip=1
+    # wrong(aug): dd if=uImage of=Image bs=64 skip=1
     #dumpimage -i uImage -T kernel Image
 }
 
