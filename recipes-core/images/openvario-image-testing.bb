@@ -7,14 +7,12 @@ IMAGE_INSTALL += "\
     xcsoar-7.0-preview14 \
     xcsoar-menu \
     xcsoar-profiles \
-    xcsoar-maps-alps \
     caltool \
     sensord-testing\
     variod-testing \
     ovmenu-ng \
     openvario-autologin \
 "
+#    xcsoar  #  statt xcsoar-7.0-preview14
 
 export IMAGE_BASENAME = "openvario-image-testing"
-
-#    xcsoar-testing 

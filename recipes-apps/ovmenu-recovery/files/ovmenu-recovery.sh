@@ -21,6 +21,7 @@ do
 	--title "[ M A I N - M E N U ]" \
 	--menu "You can use the UP/DOWN arrow keys" 15 50 6 \
 	Flash_SDCard   "Write image to SD Card" \
+	NewItem   "New Item" \
 	Reboot   "Reboot" \
 	Exit "Exit to shell" 2>"${INPUT}"
 	 
@@ -29,6 +30,7 @@ do
 	# make decsion 
 case $menuitem in
 	Flash_SDCard) select_image;;
+	NewItem ) reboot_2;;
 	Reboot) /opt/bin/reboot.sh;;
 	Exit) /bin/bash;;
 esac
@@ -36,6 +38,13 @@ esac
 done
 }
 
+function reboot_2(){
+   shutdown -r now
+   
+   echo "das sollte jetzt Schliessen! "
+   read "...und Eingabe?"
+}
+	
 function select_image(){
 	
 	images=$DIRNAME/images/OpenVario-linux*.gz
@@ -51,6 +60,15 @@ function select_image(){
 		temp3=$(echo $line | awk -F'openvario-|.rootfs' '{print $2}')
 		temp="$temp $temp3 $temp2"
 		files_nice+=($i "$temp")
+	
+	images=$DIRNAME/images/OV-*.img.gz
+	#  let i=0 # define counting variable
+	# files=() # define working array
+	# files_nice=()
+	while read -r line; do # process file by file
+		let i=$i+1
+		files+=($i "$line")
+		files_nice+=($i "$line")
 	done < <( ls -1 $images )
 	
 	if [ -n "$files" ]
