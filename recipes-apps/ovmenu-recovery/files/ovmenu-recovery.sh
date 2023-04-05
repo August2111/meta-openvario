@@ -60,11 +60,9 @@ function select_image(){
 		temp3=$(echo $line | awk -F'openvario-|.rootfs' '{print $2}')
 		temp="$temp $temp3 $temp2"
 		files_nice+=($i "$temp")
+	done < <( ls -1 $images )
 	
 	images=$DIRNAME/images/OV-*.img.gz
-	#  let i=0 # define counting variable
-	# files=() # define working array
-	# files_nice=()
 	while read -r line; do # process file by file
 		let i=$i+1
 		files+=($i "$line")
