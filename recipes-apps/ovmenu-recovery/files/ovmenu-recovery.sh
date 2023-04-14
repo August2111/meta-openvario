@@ -50,9 +50,16 @@ function reboot_direct(){
 function backup_image(){
   datestring=$(date +%F)
   mkdir -p /$DIRNAME/backup
-  dd if=/dev/mmcblk0 bs=1M count=1024 | gzip > /$DIRNAME/backup/$datestring.img.gz
-#  dd if=/dev/mmcblk0 | gzip > /usb/usbstick/$datestring.img.gz
+  # backup 1GB
+  # dd if=/dev/mmcblk0 bs=1M count=1024 | gzip > /$DIRNAME/backup/$datestring.img.gz
+  
+  # test backup 50MB (Boot areal + 10 MB)
+  dd if=/dev/mmcblk0 bs=1M count=50 | gzip > /$DIRNAME/backup/$datestring.img.gz
+  
+  echo "Backup finished"
 }
+
+
 function select_image(){
 	
 	images=$DIRNAME/images/OpenVario-linux*.gz
