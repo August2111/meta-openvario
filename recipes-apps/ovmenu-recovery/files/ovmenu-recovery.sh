@@ -21,6 +21,7 @@ do
 	--title "[ M A I N - M E N U ]" \
 	--menu "You can use the UP/DOWN arrow keys" 15 50 6 \
 	Flash_SDCard   "Write image to SD Card" \
+	Backup-Image   "Backup complete Image" \
 	NewItem   "New Item" \
 	Reboot   "Reboot" \
 	Exit "Exit to shell" 2>"${INPUT}"
@@ -30,7 +31,8 @@ do
 	# make decsion 
 case $menuitem in
 	Flash_SDCard) select_image;;
-	NewItem ) reboot_2;;
+	Backup-Image) backup_image;;
+	NewItem ) reboot_direct;;
 	Reboot) /opt/bin/reboot.sh;;
 	Exit) /bin/bash;;
 esac
@@ -38,13 +40,19 @@ esac
 done
 }
 
-function reboot_2(){
-   shutdown -r now
-   
+function reboot_direct(){
+  
    echo "das sollte jetzt Schliessen! "
    read "...und Eingabe?"
+   shutdown -r now
 }
 	
+function backup_image(){
+  datestring=$(date +%F)
+  mkdir -p /$DIRNAME/backup
+  dd if=/dev/mmcblk0 bs=1M count=1024 | gzip > /$DIRNAME/backup/$datestring.img.gz
+#  dd if=/dev/mmcblk0 | gzip > /usb/usbstick/$datestring.img.gz
+}
 function select_image(){
 	
 	images=$DIRNAME/images/OpenVario-linux*.gz
@@ -96,7 +104,7 @@ function select_image(){
 	
 	menuitem=$(<"${INPUT}")
  
-	# make decsion 
+	# make decision:
 	case $menuitem in
 		UpdateuBoot) updateuboot;;
 		UpdateAll) updateall;;
@@ -131,6 +139,21 @@ function updateall(){
 	(pv -n ${IMAGEFILE} | gunzip -c | dd of=$TARGET bs=16M) 2>&1 | dialog --gauge "Writing Image ... " 10 50 0
 }
 
+
+function update_system() {
+	echo "Updating System ..." > /tmp/tail.$$
+	/usr/bin/update-system.sh >> /tmp/tail.$$ &
+	dialog --backtitle "OpenVario" --title "Result" --tailbox /tmp/tail.$$ 30 50
+}
+
+
+setfont cp866-8x14.psf.gz
+
+main_menu
+
+#=====================================================================================
+#=====================================================================================
+#=====================================================================================
 
 #function submenu_file() {#
 #
@@ -181,12 +204,6 @@ function updateall(){
 #	esac		
 #}
 
-function update_system() {
-	echo "Updating System ..." > /tmp/tail.$$
-	/usr/bin/update-system.sh >> /tmp/tail.$$ &
-	dialog --backtitle "OpenVario" --title "Result" --tailbox /tmp/tail.$$ 30 50
-}
-
 #function calibrate_sensors() {
 #	echo "Calibrating Sensors ..." >> /tmp/tail.$$
 #	systemctl stop sensord
@@ -221,7 +238,3 @@ function update_system() {
 #function power_off() {
 #shutdown -h now
 #}
-
-setfont cp866-8x14.psf.gz
-
-main_menu
