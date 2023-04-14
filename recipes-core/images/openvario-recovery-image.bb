@@ -9,9 +9,10 @@ S = "${WORKDIR}/${PN}-${PV}"
 
 SRC_URI = "\
         file://openvario-recovery.its \
-        file://OldImage.bin \
-        file://OldDeviceTree.dtb \
         "
+
+#        file://OldImage.bin 
+#        file://OldDeviceTree.dtb 
 
 DEPENDS = "\
         dtc-native \
@@ -23,14 +24,21 @@ DEPENDS = "\
 
 do_compile[deptask] = "do_rm_work"
 
+do_configure_new () {
+}  ## this two lines can be toggled between new and old!
 do_configure () {
 	cp ${WORKDIR}/openvario-recovery.its ${S}
-	cp ${WORKDIR}/OldImage.bin ${S}/Image  # only WO
 	
+    #new image
+    dd if=${DEPLOY_DIR_IMAGE}/uImage of=Image bs=64 skip=1
+	
+	# new initramfs
     cp -v ${DEPLOY_DIR_IMAGE}/openvario-base-initramfs-${MACHINE}.cpio.gz ${S}/initramfs.cpio.gz
-	
-    # wrong(aug): cp -v ${DEPLOY_DIR_IMAGE}/${MACHINE}.dtb  ${S}/openvario.dtb
-    cp -v ${WORKDIR}/OldDeviceTree.dtb  ${S}/openvario.dtb  # only WO
+    
+    #new device tree
+    cp -v ${DEPLOY_DIR_IMAGE}/${MACHINE}.dtb  ${S}/openvario.dtb
+    
+    
 	
 	# wrong(aug): cp -v ${DEPLOY_DIR_IMAGE}/uImage ${S}
 	# wrong(aug): cp -v ${DEPLOY_DIR_IMAGE}/openvario.dtb ${S}
@@ -40,11 +48,21 @@ do_configure () {
 	# dd if=${S}/uImage-${MACHINE}.bin of=${S}/zImage skip=64 iflag=skip_bytes
 }
 
+do_configure_old () {
+	cp ${WORKDIR}/openvario-recovery.its ${S}
+	#old Image...
+    cp ${WORKDIR}/OldImage.bin ${S}/Image  # only WO
+	# new initramfs
+    cp -v ${DEPLOY_DIR_IMAGE}/openvario-base-initramfs-${MACHINE}.cpio.gz ${S}/initramfs.cpio.gz
+    #old device tree
+    cp -v ${WORKDIR}/OldDeviceTree.dtb  ${S}/openvario.dtb  # only WO
+}
+
 do_compile () {
     pwd  # only as WO for one action
     # Extract kernel from uImage
     # wrong(aug): dd if=uImage of=Image bs=64 skip=1
-    #dumpimage -i uImage -T kernel Image
+    # dumpimage -i uImage -T kernel Image
 }
 
 do_mkimage () {
