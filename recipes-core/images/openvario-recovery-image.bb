@@ -24,9 +24,8 @@ DEPENDS = "\
 
 do_compile[deptask] = "do_rm_work"
 
-do_configure_new () {
-}  ## this two lines can be toggled between new and old!
-do_configure () {
+# do_configure_new () { 
+do_configure () { ## this line can be toggled between new and old!
 	cp ${WORKDIR}/openvario-recovery.its ${S}
 	
     #new image
@@ -48,15 +47,15 @@ do_configure () {
 	# dd if=${S}/uImage-${MACHINE}.bin of=${S}/zImage skip=64 iflag=skip_bytes
 }
 
-do_configure_old () {
-	cp ${WORKDIR}/openvario-recovery.its ${S}
-	#old Image...
-    cp ${WORKDIR}/OldImage.bin ${S}/Image  # only WO
-	# new initramfs
-    cp -v ${DEPLOY_DIR_IMAGE}/openvario-base-initramfs-${MACHINE}.cpio.gz ${S}/initramfs.cpio.gz
-    #old device tree
-    cp -v ${WORKDIR}/OldDeviceTree.dtb  ${S}/openvario.dtb  # only WO
-}
+### do_configure_old () {
+### 	cp ${WORKDIR}/openvario-recovery.its ${S}
+### 	#old Image...
+###     cp ${WORKDIR}/OldImage.bin ${S}/Image  # only WO
+### 	# new initramfs
+###     cp -v ${DEPLOY_DIR_IMAGE}/openvario-base-initramfs-${MACHINE}.cpio.gz ${S}/initramfs.cpio.gz
+###     #old device tree
+###     cp -v ${WORKDIR}/OldDeviceTree.dtb  ${S}/openvario.dtb  # only WO
+### }
 
 do_compile () {
     pwd  # only as WO for one action
