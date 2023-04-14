@@ -24,8 +24,8 @@ DEPENDS = "\
 
 do_compile[deptask] = "do_rm_work"
 
-# do_configure_new () { 
-do_configure () { ## this line can be toggled between new and old!
+## the next line can be toggled between new and old!
+do_configure () {
 	cp ${WORKDIR}/openvario-recovery.its ${S}
 	
     #new image
