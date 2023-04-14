@@ -35,7 +35,8 @@ do_configure () {
     cp -v ${DEPLOY_DIR_IMAGE}/openvario-base-initramfs-${MACHINE}.cpio.gz ${S}/initramfs.cpio.gz
     
     #new device tree
-    cp -v ${DEPLOY_DIR_IMAGE}/${MACHINE}.dtb  ${S}/openvario.dtb
+    cp -v ${DEPLOY_DIR_IMAGE}/openvario.dtb  ${S}/openvario.dtb
+    # new style cp -v ${DEPLOY_DIR_IMAGE}/${MACHINE}.dtb  ${S}/openvario.dtb
     
     
 	
