@@ -3,16 +3,16 @@ HOMEPAGE = "none"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COREBASE}/LICENSE;md5=4d92cd373abda3937c2bc47fbc49d690"
 
-PR = "r25"
+PR = "r26"
 
 S = "${WORKDIR}/${PN}-${PV}"
 
 SRC_URI = "\
         file://openvario-recovery.its \
+        file://zImage.bin \
+        file://sun7i-a20-cubieboard2.dtb \
         "
 
-#        file://OldImage.bin 
-#        file://OldDeviceTree.dtb 
 
 DEPENDS = "\
         dtc-native \
@@ -29,13 +29,14 @@ do_configure () {
 	cp ${WORKDIR}/openvario-recovery.its ${S}
 	
     #new image
-    dd if=${DEPLOY_DIR_IMAGE}/uImage of=Image bs=64 skip=1
+    # dd if=${DEPLOY_DIR_IMAGE}/uImage of=Image bs=64 skip=1
+    cp -v ${WORKDIR}/zImage.bin ${S}/Image
 	
 	# new initramfs
     cp -v ${DEPLOY_DIR_IMAGE}/openvario-base-initramfs-${MACHINE}.cpio.gz ${S}/initramfs.cpio.gz
     
     #new device tree
-    cp -v ${DEPLOY_DIR_IMAGE}/openvario.dtb  ${S}/openvario.dtb
+    cp -v ${WORKDIR}/sun7i-a20-cubieboard2.dtb  ${S}/openvario.dtb
     # new style cp -v ${DEPLOY_DIR_IMAGE}/${MACHINE}.dtb  ${S}/openvario.dtb
     
     
