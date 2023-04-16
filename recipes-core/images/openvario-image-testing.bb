@@ -13,6 +13,5 @@ IMAGE_INSTALL += "\
     ovmenu-ng \
     openvario-autologin \
 "
-#    xcsoar  #  statt xcsoar-7.0-preview14
 
 export IMAGE_BASENAME = "openvario-image-testing"
