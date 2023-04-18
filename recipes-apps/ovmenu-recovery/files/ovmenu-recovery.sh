@@ -54,7 +54,7 @@ function backup_image(){
   # dd if=/dev/mmcblk0 bs=1M count=1024 | gzip > /$DIRNAME/backup/$datestring.img.gz
   
   # test backup 50MB (Boot areal + 10 MB)
-  dd if=/dev/mmcblk0 bs=1M count=50 | gzip > /$DIRNAME/backup/$datestring.img.gz
+  dd if=/dev/mmcblk0 bs=1M count=50 | gzip > /$DIRNAME/backup/$datestring.img.gz | dialog --gauge "Writing Image ... " 10 50 0
   
   echo "Backup finished"
 }
