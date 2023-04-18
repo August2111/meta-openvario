@@ -22,7 +22,6 @@ do
 	--menu "You can use the UP/DOWN arrow keys" 15 50 6 \
 	Flash_SDCard   "Write image to SD Card" \
 	Backup-Image   "Backup complete Image" \
-	NewItem   "New Item" \
 	Reboot   "Reboot" \
 	Exit "Exit to shell" 2>"${INPUT}"
 	 
@@ -32,7 +31,6 @@ do
 case $menuitem in
 	Flash_SDCard) select_image;;
 	Backup-Image) backup_image;;
-	NewItem ) reboot_direct;;
 	Reboot) /opt/bin/reboot.sh;;
 	Exit) /bin/bash;;
 esac
@@ -40,12 +38,6 @@ esac
 done
 }
 
-function reboot_direct(){
-  
-   echo "das sollte jetzt Schliessen! "
-   read "...und Eingabe?"
-   shutdown -r now
-}
 	
 function backup_image(){
   datestring=$(date +%F)
