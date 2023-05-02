@@ -62,18 +62,18 @@ function select_image(){
 	while read -r line; do # process file by file
 		let i=$i+1
 		files+=($i "$line")
-		temp=$(echo $line | grep -oE '[0-9]{5}')
-		temp2=$(echo $line | grep -o "testing")
-		temp3=$(echo $line | awk -F'openvario-|.rootfs' '{print $2}')
-		temp="$temp $temp3 $temp2"
-		files_nice+=($i "$temp")
-	done < <( ls -1 $images )
-	
-	images=$DIRNAME/images/OV-*.img.gz
-	while read -r line; do # process file by file
-		let i=$i+1
-		files+=($i "$line")
-		files_nice+=($i "$line")
+		temp1=$(echo $line | grep -oE '[0-9]{5}')
+		if [ -n "$temp1"]
+		then
+			# the complete (new) filename without extension
+			temp1=$(echo $line | awk -F'/|.img' '{print $4}')
+		else
+			temp2=$(echo $line | awk -F'openvario-|.rootfs' '{print $3}')
+			temp3=$(echo $line | grep -o "testing")
+		fi
+		
+		# temp="$temp1 $temp2 $temp3"
+		files_nice+=($i "$temp1 $temp2 $temp3")
 	done < <( ls -1 $images )
 	
 	if [ -n "$files" ]
@@ -151,94 +151,17 @@ function update_system() {
 }
 
 
-setfont cp866-8x14.psf.gz
+# ??? setfont cp866-8x14.psf.gz
 
-main_menu
+read IMAGEFILE < $DIRNAME/upgrade.file
+
+if [ -e "$IMAGEFILE"]
+then
+	updateall
+else
+	main_menu
+fi
 
 #=====================================================================================
 #=====================================================================================
 #=====================================================================================
-
-#function submenu_file() {#
-#
-#	### display file menu ###
-#	dialog --nocancel --backtitle "OpenVario" \
-#	--title "[ F I L E ]" \
-#	--begin 3 4 \
-#	--menu "You can use the UP/DOWN arrow keys" 15 50 4 \
-#	Download   "Download IGC File to USB" \
-#	Upload   "Upload files from USB to FC" \
-#	Back   "Back to Main" 2>"${INPUT}"
-#	
-#	menuitem=$(<"${INPUT}")
-#	
-#	# make decsion 
-#	case $menuitem in
-#		Download) download_files;;
-#		Upload) upload_files;;
-#		Exit) ;;
-#esac
-#}
-
-#function submenu_system() {
-#	### display system menu ###
-#	dialog --nocancel --backtitle "OpenVario" \
-#	--title "[ S Y S T E M ]" \
-#	--begin 3 4 \
-#	--menu "You can use the UP/DOWN arrow keys" 15 50 4 \
-#	Update_System   "Update system software" \
-#	Update_Maps   "Update Maps files" \
-#	Calibrate_Sensors   "Calibrate Sensors" \
-#	Back   "Back to Main" 2>"${INPUT}"
-#	
-#	menuitem=$(<"${INPUT}")
-	
-#	# make decsion 
-#	case $menuitem in
-#		Update_System) 
-#			update_system
-#			;;
-#		Update_Maps) 
-#			update_maps
-#			;;
-#		Calibrate_Sensors) 
-#			calibrate_sensors
-#		;;
-#		Exit) ;;
-#	esac		
-#}
-
-#function calibrate_sensors() {
-#	echo "Calibrating Sensors ..." >> /tmp/tail.$$
-#	systemctl stop sensord
-#	/opt/bin/sensorcal -c > /tmp/tail.$$ &
-#	dialog --backtitle "OpenVario" --title "Result" --tailbox /tmp/tail.$$ 30 50
-#	systemctl start sensord
-#}
-
-#function update_maps() {
-#	echo "Updating Maps ..." > /tmp/tail.$$
-#	/usr/bin/update-maps.sh >> /tmp/tail.$$ &
-#	dialog --backtitle "OpenVario" --title "Result" --tailbox /tmp/tail.$$ 30 50
-#}
-
-#function download_files() {
-#	echo "Downloading files ..." > /tmp/tail.$$
-#	/usr/bin/download-igc.sh >> /tmp/tail.$$ &
-#	dialog --backtitle "OpenVario" --title "Result" --tailbox /tmp/tail.$$ 30 50
-#}
-
-#function upload_files(){
-#	echo "Uploading files ..." > /tmp/tail.$$
-#	/usr/bin/upload-all.sh >> /tmp/tail.$$ &
-#	dialog --backtitle "OpenVario" --title "Result" --tailbox /tmp/tail.$$ 30 50
-#}
-
-#function start_xcsoar() {
-#	/usr/bin/xcsoar_config.sh
-#	/opt/XCSoar/bin/xcsoar -fly -480x272
-#}
-
-#function power_off() {
-#shutdown -h now
-#}
