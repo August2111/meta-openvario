@@ -21,6 +21,7 @@ do
 	--title "[ M A I N - M E N U ]" \
 	--menu "You can use the UP/DOWN arrow keys" 15 50 6 \
 	Flash_SDCard   "Write image to SD Card" \
+	Backup-Image   "Backup complete Image" \
 	Reboot   "Reboot" \
 	Exit "Exit to shell" 2>"${INPUT}"
 	 
@@ -29,6 +30,7 @@ do
 	# make decsion 
 case $menuitem in
 	Flash_SDCard) select_image;;
+	Backup-Image) backup_image;;
 	Reboot) /opt/bin/reboot.sh;;
 	Exit) /bin/bash;;
 esac
@@ -36,9 +38,23 @@ esac
 done
 }
 
+	
+function backup_image(){
+  datestring=$(date +%F)
+  mkdir -p /$DIRNAME/backup
+  # backup 1GB
+  # dd if=/dev/mmcblk0 bs=1M count=1024 | gzip > /$DIRNAME/backup/$datestring.img.gz
+  
+  # test backup 50MB (Boot areal + 10 MB)
+  dd if=/dev/mmcblk0 bs=1M count=50 | gzip > /$DIRNAME/backup/$datestring.img.gz | dialog --gauge "Writing Image ... " 10 50 0
+  
+  echo "Backup finished"
+}
+
+
 function select_image(){
 	
-	images=$DIRNAME/images/OpenVario-linux*.gz
+	images=$DIRNAME/images/O*V*-*.gz
 
 	let i=0 # define counting variable
 	files=() # define working array
@@ -46,11 +62,21 @@ function select_image(){
 	while read -r line; do # process file by file
 		let i=$i+1
 		files+=($i "$line")
-		temp=$(echo $line | grep -oE '[0-9]{5}')
-		temp2=$(echo $line | grep -o "testing")
-		temp3=$(echo $line | awk -F'openvario-|.rootfs' '{print $2}')
-		temp="$temp $temp3 $temp2"
-		files_nice+=($i "$temp")
+        filename=$(basename "$line") 
+        # OpenVario-linux
+		temp1=$(echo $line | grep -oE '[0-9]{5}')
+		if [ -n "$temp1"]
+		then
+			# the complete (new) filename without extension
+			# temp1=$(echo $line | awk -F'/|.img' '{print $4}')
+			temp1=${filename}
+		else
+			temp2=$(echo $line | awk -F'openvario-|.rootfs' '{print $3}')
+			temp3=$(echo $line | grep -o "testing")
+		fi
+		
+		# temp="$temp1 $temp2 $temp3"
+		files_nice+=($i "$temp1 $temp2 $temp3")
 	done < <( ls -1 $images )
 	
 	if [ -n "$files" ]
@@ -80,7 +106,7 @@ function select_image(){
 	
 	menuitem=$(<"${INPUT}")
  
-	# make decsion 
+	# make decision:
 	case $menuitem in
 		UpdateuBoot) updateuboot;;
 		UpdateAll) updateall;;
@@ -113,57 +139,13 @@ function updateuboot(){
 function updateall(){
 
 	(pv -n ${IMAGEFILE} | gunzip -c | dd of=$TARGET bs=16M) 2>&1 | dialog --gauge "Writing Image ... " 10 50 0
+    #########################################
+    # rename the recovery file:
+    mv $DIRNAME/ov-recovery.itb $DIRNAME/ov-recovery.itx 
+    # reboot:
+    /opt/bin/reboot.sh
 }
 
-
-#function submenu_file() {#
-#
-#	### display file menu ###
-#	dialog --nocancel --backtitle "OpenVario" \
-#	--title "[ F I L E ]" \
-#	--begin 3 4 \
-#	--menu "You can use the UP/DOWN arrow keys" 15 50 4 \
-#	Download   "Download IGC File to USB" \
-#	Upload   "Upload files from USB to FC" \
-#	Back   "Back to Main" 2>"${INPUT}"
-#	
-#	menuitem=$(<"${INPUT}")
-#	
-#	# make decsion 
-#	case $menuitem in
-#		Download) download_files;;
-#		Upload) upload_files;;
-#		Exit) ;;
-#esac
-#}
-
-#function submenu_system() {
-#	### display system menu ###
-#	dialog --nocancel --backtitle "OpenVario" \
-#	--title "[ S Y S T E M ]" \
-#	--begin 3 4 \
-#	--menu "You can use the UP/DOWN arrow keys" 15 50 4 \
-#	Update_System   "Update system software" \
-#	Update_Maps   "Update Maps files" \
-#	Calibrate_Sensors   "Calibrate Sensors" \
-#	Back   "Back to Main" 2>"${INPUT}"
-#	
-#	menuitem=$(<"${INPUT}")
-	
-#	# make decsion 
-#	case $menuitem in
-#		Update_System) 
-#			update_system
-#			;;
-#		Update_Maps) 
-#			update_maps
-#			;;
-#		Calibrate_Sensors) 
-#			calibrate_sensors
-#		;;
-#		Exit) ;;
-#	esac		
-#}
 
 function update_system() {
 	echo "Updating System ..." > /tmp/tail.$$
@@ -171,41 +153,18 @@ function update_system() {
 	dialog --backtitle "OpenVario" --title "Result" --tailbox /tmp/tail.$$ 30 50
 }
 
-#function calibrate_sensors() {
-#	echo "Calibrating Sensors ..." >> /tmp/tail.$$
-#	systemctl stop sensord
-#	/opt/bin/sensorcal -c > /tmp/tail.$$ &
-#	dialog --backtitle "OpenVario" --title "Result" --tailbox /tmp/tail.$$ 30 50
-#	systemctl start sensord
-#}
 
-#function update_maps() {
-#	echo "Updating Maps ..." > /tmp/tail.$$
-#	/usr/bin/update-maps.sh >> /tmp/tail.$$ &
-#	dialog --backtitle "OpenVario" --title "Result" --tailbox /tmp/tail.$$ 30 50
-#}
+# ??? setfont cp866-8x14.psf.gz
 
-#function download_files() {
-#	echo "Downloading files ..." > /tmp/tail.$$
-#	/usr/bin/download-igc.sh >> /tmp/tail.$$ &
-#	dialog --backtitle "OpenVario" --title "Result" --tailbox /tmp/tail.$$ 30 50
-#}
+read IMAGEFILE < $DIRNAME/upgrade.file
 
-#function upload_files(){
-#	echo "Uploading files ..." > /tmp/tail.$$
-#	/usr/bin/upload-all.sh >> /tmp/tail.$$ &
-#	dialog --backtitle "OpenVario" --title "Result" --tailbox /tmp/tail.$$ 30 50
-#}
+if [ -e "$IMAGEFILE"]
+then
+	updateall
+else
+	main_menu
+fi
 
-#function start_xcsoar() {
-#	/usr/bin/xcsoar_config.sh
-#	/opt/XCSoar/bin/xcsoar -fly -480x272
-#}
-
-#function power_off() {
-#shutdown -h now
-#}
-
-setfont cp866-8x14.psf.gz
-
-main_menu
+#=====================================================================================
+#=====================================================================================
+#=====================================================================================

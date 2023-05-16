@@ -13,14 +13,12 @@ IMAGE_INSTALL = ""
 DEPENDS += " \
 		busybox \
 		e2fsprogs \
-		vim \
 		ncurses \
 		pv \
 		ovmenu-recovery \
 		bash \
 		udev \
 		"
-#cfgmgr
 
 PACKAGE_INSTALL = " \
 		busybox \
@@ -28,12 +26,10 @@ PACKAGE_INSTALL = " \
 		e2fsprogs-mke2fs \
 		ncurses \
 		pv \
-		vim \
 		ovmenu-recovery \
 		bash \
 		udev \
 		"
-# cfgmgr 
 
 IMAGE_DEV_MANAGER   = "udev"
 IMAGE_INIT_MANAGER  = "systemd"

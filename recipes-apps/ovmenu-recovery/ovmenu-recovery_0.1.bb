@@ -10,7 +10,7 @@ DEPENDS = "dialog"
 RDEPENDS_${PN} = "dialog \
 					bash \
 				"
-PR = "r8"
+PR = "r9"
 
 S = "${WORKDIR}"
 
