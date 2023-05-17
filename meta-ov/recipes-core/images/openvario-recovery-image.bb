@@ -35,15 +35,33 @@ do_configure () {
 }
 
 do_compile () {
-    # Extract kernel from uImage
-    dd if=uImage of=Image bs=64 skip=1
-    #dumpimage -i uImage -T kernel Image
+### <<<<<<< HEAD
+###     # Extract kernel from uImage
+###     dd if=uImage of=Image bs=64 skip=1
+###     #dumpimage -i uImage -T kernel Image
+### }
+### 
+### do_mkimage () {
+###     # Build ITB with provided config
+###     pwd
+###     mkimage -A arm -f ${S}/openvario-recovery.its ${S}/ov-recovery.itb
+### =======
+	pwd  # only as WO for one action
+	# Extract kernel from uImage
+	# wrong(aug): dd if=uImage of=Image bs=64 skip=1
+	# dumpimage -i uImage -T kernel Image
 }
 
 do_mkimage () {
-    # Build ITB with provided config
-    pwd
-    mkimage -A arm -f ${S}/openvario-recovery.its ${S}/ov-recovery.itb
+	# show mkimage version:
+	echo "========================================="
+	mkimage -V
+	${S}/mkimage_x -V
+	echo "========================================="
+	# Build ITB with provided config
+	#    mkimage   -A arm -f ${S}/openvario-recovery.its ${S}/ov-recovery.itb
+	${S}/mkimage_x -A arm -f ${S}/openvario-recovery.its ${S}/ov-recovery.itb
+### >>>>>>> 6726362 (ovmenu-recovery.sh - make an upgrade directly in case of a firmware file link)
 }
 
 addtask mkimage after do_configure before do_install

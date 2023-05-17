@@ -3,9 +3,11 @@ inherit core-image
 
 LICENSE = "MIT"
 
+PR = "r2"
+
 IMAGE_FEATURES += " package-management"
 
-INITRAMFS_FILES:prepend := "${THISDIR}/initramfs/"
+INITRAMFS_FILES_prepend := "${THISDIR}/initramfs/"
 
 # Remove all installed packages to get a really small initramfs
 IMAGE_INSTALL = ""
