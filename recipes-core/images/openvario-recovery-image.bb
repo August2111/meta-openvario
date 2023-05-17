@@ -39,12 +39,19 @@ do_configure () {
 
 do_compile () {
 	pwd  # only as WO for one action
+	# Extract kernel from uImage
+	# wrong(aug): dd if=uImage of=Image bs=64 skip=1
+	# dumpimage -i uImage -T kernel Image
 }
 
 do_mkimage () {
 	# show mkimage version:
+	echo "========================================="
+	mkimage -V
 	${S}/mkimage_x -V
+	echo "========================================="
 	# Build ITB with provided config
+	#    mkimage   -A arm -f ${S}/openvario-recovery.its ${S}/ov-recovery.itb
 	${S}/mkimage_x -A arm -f ${S}/openvario-recovery.its ${S}/ov-recovery.itb
 }
 
