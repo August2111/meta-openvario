@@ -14,7 +14,7 @@ SRC_URI = "\
 
 DEPENDS = "\
         dtc-native \
-        linux-mainline \
+        virtual/kernel \
         openvario-recovery-initramfs \
         u-boot-mkimage-native \
         u-boot \
@@ -30,7 +30,6 @@ do_configure () {
 	# new initramfs
 	cp -v ${DEPLOY_DIR_IMAGE}/openvario-base-initramfs-${MACHINE}.cpio.gz ${S}/initramfs.cpio.gz
 	cp -v ${DEPLOY_DIR_IMAGE}/openvario.dtb ${S}
-
 }
 
 do_compile () {
